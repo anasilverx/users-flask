@@ -23,10 +23,18 @@ def create_app(test_config=None):
         app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
             "SQLALCHEMY_TEST_DATABASE_URI")
 
+    bcrypt = Bcrypt(app)
     db.init_app(app)
     migrate.init_app(app, db)
 
     #import models
     from app.models.user import User
+
+    #import blueprints
+    from .routes.auth_routes import auth_bp
+    app.register_blueprint(auth_bp)
+
+    from .routes.message_routes import message_bp
+    app.register_blueprint(message_bp)
 
     return app
