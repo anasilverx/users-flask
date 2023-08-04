@@ -13,3 +13,5 @@ hex attribute returns the UUID as a 32-character hexadecimal string without any 
 The db init, db migrate, and db upgrade commands help you set up and apply the necessary database changes. After the initial setup, you don't need to run db.create_all() inside create_app() anymore.
 
 This approach separates the database setup and migration logic from the create_app() function, making it more maintainable and suitable for different deployment environments.
+
+The app.config["SECRET_KEY"] is a critical configuration option in a Flask application that is used for enhancing security by providing a secret key for various purposes. It is essential to set this configuration option for applications that use sessions, cookies, and other security-related features. The secret key is used to sign the session cookie and other sensitive data to prevent tampering and ensure data integrity.
