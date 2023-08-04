@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 
 db = SQLAlchemy()
 migrate = Migrate()
+bcrypt = Bcrypt()
 load_dotenv()
 
 def create_app(test_config=None):
@@ -23,9 +24,9 @@ def create_app(test_config=None):
         app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
             "SQLALCHEMY_TEST_DATABASE_URI")
 
-    bcrypt = Bcrypt(app)
     db.init_app(app)
     migrate.init_app(app, db)
+    bcrypt.init_app(app)
 
     #import models
     from app.models.user import User

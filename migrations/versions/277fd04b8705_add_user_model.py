@@ -1,8 +1,8 @@
-"""empty message
+"""add user model
 
-Revision ID: f4ba64d8df71
+Revision ID: 277fd04b8705
 Revises: 
-Create Date: 2023-08-04 00:32:50.218703
+Create Date: 2023-08-04 14:44:12.226853
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'f4ba64d8df71'
+revision = '277fd04b8705'
 down_revision = None
 branch_labels = None
 depends_on = None
