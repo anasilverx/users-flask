@@ -1,12 +1,31 @@
 from flask import Blueprint, request, jsonify
 from flask_bcrypt import Bcrypt
-from flask_jwt_extended import create_access_token, unset_jwt_cookies 
+from flask_jwt_extended import create_access_token, unset_jwt_cookies, jwt_required, jwt_manager, get_jwt, get_jwt_identity 
+from datetime import datetime, timedelta, timezone
 from app.models.user import User
 from app import db
 
 auth_bp = Blueprint('auth', __name__)
 
 bcrypt = Bcrypt()
+
+@auth_bp.after_request
+def refresh_expiring_jwts(response):
+    try:
+        exp_timestamp = get_jwt()["exp"]
+        now = datetime.now(timezone.utc)
+        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
+        if target_timestamp > exp_timestamp:
+            access_token = create_access_token(identity=get_jwt_identity())
+            data = response.get_json()
+            if type(data) is dict:
+                data["access_token"] = access_token 
+                response.data = json.dumps(data)
+        return response
+    except (RuntimeError, KeyError):
+        # Case where there is not a valid JWT. Just return the original respone
+        return response
+
 @auth_bp.route('/token', methods=["POST"])
 def create_token():
     email = request.json.get("email", None)
@@ -68,7 +87,9 @@ def logout():
     unset_jwt_cookies(response)
     return response
 
+
 @auth_bp.route("/profile")
+@jwt_required()
 def my_profile():
     response_body= {
         "name": "Morti Web App",
