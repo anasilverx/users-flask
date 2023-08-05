@@ -1,4 +1,6 @@
 from flask import Blueprint, request, jsonify
+from flask_login import login_required, logout_user
+from flask_cors import CORS, cross_origin
 from flask_bcrypt import Bcrypt 
 from app.models.user import User
 from app import db
@@ -6,6 +8,7 @@ from app import db
 auth_bp = Blueprint('auth', __name__)
 
 bcrypt = Bcrypt()
+
 @auth_bp.route("/register", methods=["POST"])
 def register_user():
     email = request.json["email"]
@@ -21,6 +24,8 @@ def register_user():
 
     db.session.add(new_user)
     db.session.commit()
+
+    # login_user()
 
     return jsonify({
         "id": new_user.id,
@@ -40,7 +45,15 @@ def login_user():
     if not bcrypt.check_password_hash(user.password, password):
         return jsonify({"error": "Unauthorized"}), 401
 
+    # login_user()
     return jsonify({
         "id": user.id,
         "email": user.email
     })
+
+# @auth_bp.route("/logout", methods=["POST"])
+# @login_required
+# def logout():
+#     logout_user()
+#     flash("You were logged out.", "success")
+#     return redirect(url_for("accounts.login"))
