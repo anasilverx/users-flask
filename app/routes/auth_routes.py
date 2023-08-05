@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_bcrypt import Bcrypt
-from flask_jwt_extended import create_access_token 
+from flask_jwt_extended import create_access_token, unset_jwt_cookies 
 from app.models.user import User
 from app import db
 
@@ -61,6 +61,12 @@ def login_user():
         "id": user.id,
         "email": user.email
     })
+
+@auth_bp.route("/logout", methods=["POST"])
+def logout():
+    response = jsonify({"msg":"logout successful"})
+    unset_jwt_cookies(response)
+    return response
 
 @auth_bp.route("/profile")
 def my_profile():
