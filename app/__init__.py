@@ -4,17 +4,20 @@ from flask_migrate import Migrate
 from flask_bcrypt import Bcrypt
 import os
 from dotenv import load_dotenv
+from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, unset_jwt_cookies, jwt_required, JWTManager
 
 db = SQLAlchemy()
 migrate = Migrate()
 bcrypt = Bcrypt()
+jwt = JWTManager()
 load_dotenv()
 
 def create_app(test_config=None):
     app = Flask(__name__)
+    
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SQLALCHEMY_ECHO"] = True #set to false after deployment
-    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
+    app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY")
 
     if test_config is None:
         app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
@@ -27,7 +30,7 @@ def create_app(test_config=None):
     db.init_app(app)
     migrate.init_app(app, db)
     bcrypt.init_app(app)
-
+    jwt.init_app(app)
     #import models
     from app.models.user import User
 

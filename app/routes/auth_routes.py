@@ -1,11 +1,28 @@
 from flask import Blueprint, request, jsonify
-from flask_bcrypt import Bcrypt 
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import create_access_token 
 from app.models.user import User
 from app import db
 
 auth_bp = Blueprint('auth', __name__)
 
 bcrypt = Bcrypt()
+@auth_bp.route('/token', methods=["POST"])
+def create_token():
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+    
+    user = User.query.filter_by(email=email).first()
+
+    if not user or not bcrypt.check_password_hash(user.password, password):
+        return {"msg": "Wrong email or password"}, 401
+        
+    access_token = create_access_token(identity=email)
+    response = {'access_token':access_token}
+        
+    
+    return response 
+
 @auth_bp.route("/register", methods=["POST"])
 def register_user():
     email = request.json["email"]
@@ -44,3 +61,11 @@ def login_user():
         "id": user.id,
         "email": user.email
     })
+
+@auth_bp.route("/profile")
+def my_profile():
+    response_body= {
+        "name": "Morti Web App",
+        "about": "Hello! Send Farewell"
+    }
+    return response_body
